@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detector de Spam Online</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- PDF.js para extraer texto de PDFs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+    <!-- Tesseract.js para OCR -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.3/dist/tesseract.min.js"></script>
+
+</head>
+<body>
+    <div class="container" style="display:flex; flex-wrap:wrap; gap:40px; background:transparent; box-shadow:none;">
+        <div class="main-panel" style="flex:2; min-width:320px; background:white; border-radius:14px; box-shadow:0 2px 16px #e0e7ef; padding:32px 28px;">
+            <h1 style="margin-bottom:18px;">🛡️ Detector de Spam (IA)</h1>
+            <p style="margin-bottom:24px; color:#555;">Analiza texto, archivo o imagen desde tu navegador con IA ligera.</p>
+
+            <textarea id="textInput" rows="6" placeholder="Escribe aquí..." style="margin-bottom:18px;"></textarea>
+
+            <div class="file-group">
+                <label for="fileInput">Archivo:</label>
+                <input type="file" id="fileInput" accept=".txt,.pdf" />
+            </div>
+
+            <div class="file-group">
+                <label for="imageInput">Imagen:</label>
+                <input type="file" id="imageInput" accept="image/*" />
+            </div>
+
+            <button onclick="analyzeSpam()" aria-label="Analizar contenido" style="margin-top:12px; margin-bottom:18px;">Analizar</button>
+
+            <div id="results"></div>
+            <div style="margin-top:28px;">
+                <a href="documentacion_detector_spam.html" target="_blank" style="color:#0077cc;text-decoration:underline;">
+                    📄 Ver documentación formal del detector de spam
+                </a>
+            </div>
+        </div>
+        <div class="side-panel" style="flex:1; min-width:260px; background:#f8fafc; border-radius:14px; box-shadow:0 2px 16px #e0e7ef; padding:32px 22px; align-self:flex-start;">
+            <h2 style="font-size:1.15rem; margin-bottom:18px; color:#0077cc; font-weight:600;">Tabla de clasificación</h2>
+            <table style="width:100%; border-collapse:collapse; font-size:1rem; background:white; border-radius:8px; overflow:hidden; box-shadow:0 1px 8px #e0e7ef;">
+                <thead>
+                    <tr style="background:#f0f4fa;">
+                        <th style="border-bottom:1px solid #e0e7ef; text-align:left; padding:10px 8px;">Tipo</th>
+                        <th style="border-bottom:1px solid #e0e7ef; padding:10px 8px;">Puntaje</th>
+                        <th style="border-bottom:1px solid #e0e7ef; padding:10px 8px;">Color</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding:10px 8px;">Contenido spam</td>
+                        <td style="padding:10px 8px;">&ge; 5</td>
+                        <td style="background:#ffe6e6; color:#cc0000; text-align:center; border-radius:6px; font-weight:600; padding:10px 8px;">Rojo claro</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px 8px;">Contenido sospechoso</td>
+                        <td style="padding:10px 8px;">3 - 4</td>
+                        <td style="background:#fff9e6; color:#e6b800; text-align:center; border-radius:6px; font-weight:600; padding:10px 8px;">Amarillo claro</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px 8px;">Contenido limpio</td>
+                        <td style="padding:10px 8px;">&lt; 3</td>
+                        <td style="background:#e6fff0; color:#28a745; text-align:center; border-radius:6px; font-weight:600; padding:10px 8px;">Verde claro</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="margin-top:18px; font-size:0.97rem; color:#555;">
+                <span style="display:inline-block; width:14px; height:14px; background:#ffe6e6; border-radius:3px; margin-right:6px; border:1px solid #cc0000;"></span> Spam<br>
+                <span style="display:inline-block; width:14px; height:14px; background:#fff9e6; border-radius:3px; margin-right:6px; border:1px solid #e6b800;"></span> Sospechoso<br>
+                <span style="display:inline-block; width:14px; height:14px; background:#e6fff0; border-radius:3px; margin-right:6px; border:1px solid #28a745;"></span> Limpio
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
+<!--
+Gramática Libre de Contexto (GLC) para el Detector de Spam
+
+S           → HTML
+HTML        → <!DOCTYPE html> <html LANG> HEAD BODY </html>
+LANG        → lang="es"
+HEAD        → <head> META TITLE LINK SCRIPT SCRIPT </head>
+META        → <meta charset="UTF-8">
+TITLE       → <title> TEXTO </title>
+LINK        → <link rel="stylesheet" href="styles.css">
+SCRIPT      → <script src=SRC></script>
+SRC         → "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"
+            | "https://cdn.jsdelivr.net/npm/tesseract.js@5.0.3/dist/tesseract.min.js"
+            | "script.js"
+BODY        → <body> DIV </body>
+DIV         → <div class="container"> CONTENT </div>
+CONTENT     → H1 P DIV
+H1          → <h1> TEXTO </h1>
+P           → <p> TEXTO </p>
+DIV         → <div style="display:flex; flex-wrap:wrap; gap:24px;"> CONTENT1 CONTENT2 </div>
+CONTENT1    → <div style="flex:2; min-width:260px;"> TEXTAREA FILEGROUP FILEGROUP BUTTON RESULTDIV </div>
+TEXTAREA    → <textarea id="textInput" rows="6" placeholder="Escribe aquí..."></textarea>
+FILEGROUP   → <div class="file-group"> LABEL INPUT </div>
+LABEL       → <label> TEXTO </label>
+INPUT       → <input ATRIBUTOS>
+ATRIBUTOS   → id="fileInput" accept=".txt,.pdf" type="file"
+            | id="imageInput" accept="image/*" type="file"
+BUTTON      → <button onclick="analyzeSpam()"> TEXTO </button>
+RESULTDIV   → <div id="results"></div>
+CONTENT2    → <div style="flex:1; min-width:220px;"> TABLE </div>
+TABLE       → <table style="width:100%; border-collapse:collapse; font-size:0.98rem;"> THEAD TBODY </table>
+THEAD       → <thead> <tr> <th> TEXTO </th> <th> TEXTO </th> <th> TEXTO </th> </tr> </thead>
+TBODY       → <tbody> <tr> <td> TEXTO </td> <td> TEXTO </td> <td> TEXTO </td> </tr> ... </tbody>
+TEXTO       → cualquier_texto
+-->

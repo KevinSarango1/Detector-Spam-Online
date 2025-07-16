@@ -1,0 +1,170 @@
+AVANCE TRABAJO FINAL
+
+ESTUDIANTE: Kevin Patricio Sarango Olaya
+DOCENTE: Ing. Roberth Figueroa
+ASIGNATURA: Teoría de autómatas y computabilidad avanzada
+FECHA: 15/07/2025
+
+TÍTULO DEL AUTÓMATA: Detector de Spam Online
+
+------------------------------------------------------------
+¿Qué es y cómo funciona?
+
+El Detector de Spam Online es una aplicación web que permite analizar texto, archivos PDF y archivos de imagen para identificar contenido potencialmente spam. El sistema utiliza expresiones regulares y reglas heurísticas para calcular un puntaje de spam y clasificar el contenido como limpio, sospechoso o spam. El análisis se realiza completamente en el navegador, sin enviar datos a servidores externos.
+
+El funcionamiento general es el siguiente:
+1. El usuario ingresa texto, selecciona un archivo o una imagen.
+2. El sistema extrae el texto de la entrada (usando PDF.js para PDFs y Tesseract.js para imágenes).
+3. Se valida que los campos no estén vacíos y que no se supere el límite de palabras.
+4. El sistema compara el texto contra patrones de spam definidos (expresiones regulares).
+5. Se calcula un puntaje de spam según coincidencias y características del archivo/imagen.
+6. El resultado se muestra al usuario: limpio, sospechoso o spam.
+
+------------------------------------------------------------
+¿Cómo está dividido?
+
+El sistema está dividido en los siguientes módulos:
+- Interfaz de usuario: Permite ingresar texto, archivos o imágenes y muestra los resultados.
+- Módulo de extracción: Obtiene el texto desde archivos PDF o imágenes.
+- Módulo de validación: Verifica que los campos no estén vacíos y que el texto no supere el límite de palabras.
+- Módulo de análisis: Aplica expresiones regulares y reglas heurísticas para calcular el puntaje de spam.
+- Módulo de resultados: Presenta la clasificación final al usuario.
+
+------------------------------------------------------------
+¿Por qué es considerado autómata?
+
+El sistema puede modelarse como un autómata finito, donde cada paso del proceso corresponde a un estado y las acciones del usuario o del sistema son las transiciones. Los estados principales son:
+- Espera de entrada del usuario
+- Validación de campos vacíos
+- Validación de límite de palabras
+- Extracción de texto
+- Análisis de patrones de spam
+- Presentación de resultados
+- Reinicio para nueva entrada
+
+Las transiciones dependen de las acciones del usuario y de las validaciones del sistema, siguiendo una lógica secuencial y determinista.
+
+------------------------------------------------------------
+¿Qué expresiones regulares usa?
+
+Las principales expresiones regulares utilizadas para detectar spam son:
+
+- /gratis/
+- /haz clic/
+- /dinero/
+- /urgente/
+- /oferta/
+- /exclusiva/
+- /\$\d+/
+- /\biphone\b/
+- /\bsamsung\b/
+- /\bgalaxy\b/
+- /\b[A-Z]{4,}\b/   (palabras en mayúsculas de 4 o más letras)
+
+Estas expresiones buscan palabras clave y patrones típicos de mensajes de spam.
+
+------------------------------------------------------------
+¿Cuál es la GLC que usa?
+
+La Gramática Libre de Contexto (GLC) que describe la estructura del HTML del sistema es:
+
+S           → HTML
+HTML        → <!DOCTYPE html> <html LANG> HEAD BODY </html>
+LANG        → lang="es"
+HEAD        → <head> META TITLE LINK SCRIPT SCRIPT </head>
+META        → <meta charset="UTF-8">
+TITLE       → <title> TEXTO </title>
+LINK        → <link rel="stylesheet" href="styles.css">
+SCRIPT      → <script src=SRC></script>
+SRC         → "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"
+            | "https://cdn.jsdelivr.net/npm/tesseract.js@5.0.3/dist/tesseract.min.js"
+            | "script.js"
+BODY        → <body> DIV </body>
+DIV         → <div class="container"> CONTENT </div>
+CONTENT     → H1 P DIV
+H1          → <h1> TEXTO </h1>
+P           → <p> TEXTO </p>
+DIV         → <div style="display:flex; flex-wrap:wrap; gap:24px;"> CONTENT1 CONTENT2 </div>
+CONTENT1    → <div style="flex:2; min-width:260px;"> TEXTAREA FILEGROUP FILEGROUP BUTTON RESULTDIV </div>
+TEXTAREA    → <textarea id="textInput" rows="6" placeholder="Escribe aquí..."></textarea>
+FILEGROUP   → <div class="file-group"> LABEL INPUT </div>
+LABEL       → <label> TEXTO </label>
+INPUT       → <input ATRIBUTOS>
+ATRIBUTOS   → id="fileInput" accept=".txt,.pdf" type="file"
+            | id="imageInput" accept="image/*" type="file"
+BUTTON      → <button onclick="analyzeSpam()"> TEXTO </button>
+RESULTDIV   → <div id="results"></div>
+CONTENT2    → <div style="flex:1; min-width:220px;"> TABLE </div>
+TABLE       → <table style="width:100%; border-collapse:collapse; font-size:0.98rem;"> THEAD TBODY </table>
+THEAD       → <thead> <tr> <th> TEXTO </th> <th> TEXTO </th> <th> TEXTO </th> </tr> </thead>
+TBODY       → <tbody> <tr> <td> TEXTO </td> <td> TEXTO </td> <td> TEXTO </td> </tr> ... </tbody>
+TEXTO       → cualquier_texto
+
+------------------------------------------------------------
+GLC enfocada al sistema detector de spam
+
+S                → ENTRADA VALIDACION ANALISIS CLASIFICACION
+ENTRADA          → usuario_ingresa
+VALIDACION       → valida_vacio | valida_limite
+valida_vacio     → campos_vacios S
+valida_limite    → supera_limite S | datos_validos
+ANALISIS         → extrae_texto aplica_regex
+extrae_texto     → texto_plano | texto_pdf | texto_imagen
+aplica_regex     → patron_spam aplica_regex | ε
+CLASIFICACION    → resultado_spam | resultado_sospechoso | resultado_limpio
+
+patron_spam      → "gratis" | "haz clic" | "dinero" | "urgente" | "oferta" | "exclusiva" | "$[0-9]+" | "iphone" | "samsung" | "galaxy" | mayusculas
+mayusculas       → [A-Z]{4,}
+
+resultado_spam         → "SPAM (puntaje ≥ 5)"
+resultado_sospechoso   → "SOSPECHOSO (puntaje 3-4)"
+resultado_limpio       → "LIMPIO (puntaje < 3)"
+
+------------------------------------------------------------
+Significado de cada símbolo en la GLC del sistema detector de spam
+
+S
+    Es el símbolo inicial. Representa el proceso completo del sistema: desde la entrada del usuario hasta la clasificación final.
+
+ENTRADA
+    Representa el momento en que el usuario ingresa información (texto, archivo PDF o imagen) para analizar.
+
+VALIDACION
+    Es el proceso donde el sistema verifica que los datos ingresados no estén vacíos y que no superen el límite de palabras permitido.
+
+valida_vacio
+    Si los campos están vacíos, el sistema lo detecta y vuelve a pedir entrada al usuario (reinicia el proceso).
+
+valida_limite
+    Si el texto supera el límite de palabras, el sistema lo detecta y vuelve a pedir entrada al usuario. Si los datos son válidos, continúa el análisis.
+
+ANALISIS
+    El sistema extrae el texto de la entrada (puede ser texto plano, PDF o imagen) y aplica las expresiones regulares para buscar patrones de spam.
+
+extrae_texto
+    Indica el tipo de entrada que se procesa: texto plano, texto extraído de PDF o texto extraído de imagen.
+
+aplica_regex
+    El sistema aplica de manera recursiva los patrones de spam definidos (expresiones regulares) sobre el texto extraído.
+
+CLASIFICACION
+    El sistema clasifica el contenido según el puntaje obtenido: spam, sospechoso o limpio.
+
+patron_spam
+    Son los patrones que el sistema busca en el texto para detectar spam. Incluye palabras clave y expresiones regulares típicas de mensajes de spam.
+
+mayusculas
+    Detecta palabras en mayúsculas de 4 o más letras, que suelen ser usadas en mensajes de spam.
+
+resultado_spam
+    El sistema indica que el contenido es spam si el puntaje es mayor o igual a 5.
+
+resultado_sospechoso
+    El sistema indica que el contenido es sospechoso si el puntaje está entre 3 y 4.
+
+resultado_limpio
+    El sistema indica que el contenido es limpio si el puntaje es menor a 3.
+
+------------------------------------------------------------
+
+Fin del avance.

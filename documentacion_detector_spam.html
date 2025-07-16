@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Documentación Formal - Detector de Spam IA</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f5f7fa; color: #222; padding: 40px; }
+        h1, h2 { color: #0077cc; }
+        code, pre { background: #eef; padding: 6px; border-radius: 6px; }
+        .section { margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <h1>Documentación Formal: Detector de Spam IA (Frontend)</h1>
+    <div class="section">
+        <h2>¿Qué hace el sistema?</h2>
+        <p>
+            El sistema permite al usuario analizar texto, archivos (.txt, .pdf) e imágenes para detectar contenido potencialmente spam usando reglas heurísticas y procesamiento ligero en el navegador.
+        </p>
+    </div>
+    <div class="section">
+        <h2>Funcionamiento general</h2>
+        <ol>
+            <li>El usuario ingresa texto, selecciona un archivo o una imagen.</li>
+            <li>El detector extrae el texto de la entrada (usando PDF.js para PDFs y Tesseract.js para imágenes).</li>
+            <li>El sistema compara el texto contra patrones de spam definidos (palabras clave, expresiones regulares).</li>
+            <li>Se calcula un puntaje de spam según coincidencias y características del archivo/imagen.</li>
+            <li>El resultado se muestra al usuario: limpio, sospechoso o spam.</li>
+        </ol>
+    </div>
+    <div class="section">
+        <h2>Autómata del Detector de Spam</h2>
+        <p>
+            El proceso puede representarse como un autómata finito con los siguientes estados:
+        </p>
+        <pre>
+Estados:
+    INICIO         → Espera de entrada del usuario
+    EXTRACCION     → Extracción de texto de la entrada
+    ANALISIS       → Análisis de patrones de spam
+    RESULTADO      → Muestra el resultado al usuario
+
+Transiciones:
+    INICIO → EXTRACCION   (cuando el usuario envía una entrada)
+    EXTRACCION → ANALISIS (cuando se obtiene el texto)
+    ANALISIS → RESULTADO  (cuando se calcula el puntaje)
+    RESULTADO → INICIO    (cuando el usuario vuelve a ingresar datos)
+        </pre>
+    </div>
+    <div class="section">
+        <h2>Gramática Libre de Contexto (GLC) del sistema detector de spam</h2>
+        <pre>
+S                → ENTRADA VALIDACION ANALISIS CLASIFICACION
+ENTRADA          → usuario_ingresa
+VALIDACION       → valida_vacio | valida_limite
+valida_vacio     → campos_vacios S
+valida_limite    → supera_limite S | datos_validos
+ANALISIS         → extrae_texto aplica_regex
+extrae_texto     → texto_plano | texto_pdf | texto_imagen
+aplica_regex     → patron_spam aplica_regex | ε
+CLASIFICACION    → resultado_spam | resultado_sospechoso | resultado_limpio
+
+patron_spam      → "gratis" | "haz clic" | "dinero" | "urgente" | "oferta" | "exclusiva" | "$[0-9]+" | "iphone" | "samsung" | "galaxy" | mayusculas
+mayusculas       → [A-Z]{4,}
+
+resultado_spam         → "SPAM (puntaje ≥ 5)"
+resultado_sospechoso   → "SOSPECHOSO (puntaje 3-4)"
+resultado_limpio       → "LIMPIO (puntaje < 3)"
+        </pre>
+        <h3>Explicación de cada símbolo</h3>
+        <ul style="font-size:1rem;">
+            <li><strong>S</strong>: Es el símbolo inicial. Representa el proceso completo del sistema: desde la entrada del usuario hasta la clasificación final.</li>
+            <li><strong>ENTRADA</strong>: Representa el momento en que el usuario ingresa información (texto, archivo PDF o imagen) para analizar.</li>
+            <li><strong>VALIDACION</strong>: Es el proceso donde el sistema verifica que los datos ingresados no estén vacíos y que no superen el límite de palabras permitido.</li>
+            <li><strong>valida_vacio</strong>: Si los campos están vacíos, el sistema lo detecta y vuelve a pedir entrada al usuario (reinicia el proceso).</li>
+            <li><strong>valida_limite</strong>: Si el texto supera el límite de palabras, el sistema lo detecta y vuelve a pedir entrada al usuario. Si los datos son válidos, continúa el análisis.</li>
+            <li><strong>ANALISIS</strong>: El sistema extrae el texto de la entrada (puede ser texto plano, PDF o imagen) y aplica las expresiones regulares para buscar patrones de spam.</li>
+            <li><strong>extrae_texto</strong>: Indica el tipo de entrada que se procesa: texto plano, texto extraído de PDF o texto extraído de imagen.</li>
+            <li><strong>aplica_regex</strong>: El sistema aplica de manera recursiva los patrones de spam definidos (expresiones regulares) sobre el texto extraído.</li>
+            <li><strong>CLASIFICACION</strong>: El sistema clasifica el contenido según el puntaje obtenido: spam, sospechoso o limpio.</li>
+            <li><strong>patron_spam</strong>: Son los patrones que el sistema busca en el texto para detectar spam. Incluye palabras clave y expresiones regulares típicas de mensajes de spam.</li>
+            <li><strong>mayusculas</strong>: Detecta palabras en mayúsculas de 4 o más letras, que suelen ser usadas en mensajes de spam.</li>
+            <li><strong>resultado_spam</strong>: El sistema indica que el contenido es spam si el puntaje es mayor o igual a 5.</li>
+            <li><strong>resultado_sospechoso</strong>: El sistema indica que el contenido es sospechoso si el puntaje está entre 3 y 4.</li>
+            <li><strong>resultado_limpio</strong>: El sistema indica que el contenido es limpio si el puntaje es menor a 3.</li>
+        </ul>
+    </div>
+    <div class="section">
+        <h2>Notas técnicas</h2>
+        <ul>
+            <li>El análisis se realiza completamente en el navegador, sin enviar datos a servidores.</li>
+            <li>La detección de spam es heurística, no usa modelos de IA pesados.</li>
+            <li>El sistema es extensible: más adelante se puede agregar más patrones o reglas según sean necesarios.</li>
+        </ul>
+    </div>
+</body>
+</html>
