@@ -77,39 +77,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
-<!--
-Gramática Libre de Contexto (GLC) para el Detector de Spam
-
-S           → HTML
-HTML        → <!DOCTYPE html> <html LANG> HEAD BODY </html>
-LANG        → lang="es"
-HEAD        → <head> META TITLE LINK SCRIPT SCRIPT </head>
-META        → <meta charset="UTF-8">
-TITLE       → <title> TEXTO </title>
-LINK        → <link rel="stylesheet" href="styles.css">
-SCRIPT      → <script src=SRC></script>
-SRC         → "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"
-            | "https://cdn.jsdelivr.net/npm/tesseract.js@5.0.3/dist/tesseract.min.js"
-            | "script.js"
-BODY        → <body> DIV </body>
-DIV         → <div class="container"> CONTENT </div>
-CONTENT     → H1 P DIV
-H1          → <h1> TEXTO </h1>
-P           → <p> TEXTO </p>
-DIV         → <div style="display:flex; flex-wrap:wrap; gap:24px;"> CONTENT1 CONTENT2 </div>
-CONTENT1    → <div style="flex:2; min-width:260px;"> TEXTAREA FILEGROUP FILEGROUP BUTTON RESULTDIV </div>
-TEXTAREA    → <textarea id="textInput" rows="6" placeholder="Escribe aquí..."></textarea>
-FILEGROUP   → <div class="file-group"> LABEL INPUT </div>
-LABEL       → <label> TEXTO </label>
-INPUT       → <input ATRIBUTOS>
-ATRIBUTOS   → id="fileInput" accept=".txt,.pdf" type="file"
-            | id="imageInput" accept="image/*" type="file"
-BUTTON      → <button onclick="analyzeSpam()"> TEXTO </button>
-RESULTDIV   → <div id="results"></div>
-CONTENT2    → <div style="flex:1; min-width:220px;"> TABLE </div>
-TABLE       → <table style="width:100%; border-collapse:collapse; font-size:0.98rem;"> THEAD TBODY </table>
-THEAD       → <thead> <tr> <th> TEXTO </th> <th> TEXTO </th> <th> TEXTO </th> </tr> </thead>
-TBODY       → <tbody> <tr> <td> TEXTO </td> <td> TEXTO </td> <td> TEXTO </td> </tr> ... </tbody>
-TEXTO       → cualquier_texto
--->
