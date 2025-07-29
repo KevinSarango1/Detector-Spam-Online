@@ -52,15 +52,24 @@ Transiciones:
         <pre>
 S                → ENTRADA VALIDACION ANALISIS CLASIFICACION
 ENTRADA          → usuario_ingresa
-VALIDACION       → valida_vacio | valida_limite
-valida_vacio     → campos_vacios S
-valida_limite    → supera_limite S | datos_validos
+usuario_ingresa  → texto | archivo | imagen
+texto            → VALIDACION
+archivo          → VALIDACION
+imagen           → VALIDACION
+VALIDACION       → valida_Entrada
+valida_Entrada   → ANALISIS
 ANALISIS         → extrae_texto aplica_regex
 extrae_texto     → texto_plano | texto_pdf | texto_imagen
+texto_plano      → aplica_regex
+texto_pdf        → aplica_regex
+texto_imagen     → aplica_regex
 aplica_regex     → patron_spam aplica_regex | ε
+patron_spam      → CLASIFICACION
+aplica_regex     → CLASIFICACION
+ε                → CLASIFICACION
 CLASIFICACION    → resultado_spam | resultado_sospechoso | resultado_limpio
 
-patron_spam      → "gratis" | "haz clic" | "dinero" | "urgente" | "oferta" | "exclusiva" | "$[0-9]+" | "iphone" | "samsung" | "galaxy" | mayusculas
+patron_spam      → "gratis" | "haz clic" | "dinero" | "urgente" | "oferta" | "exclusiva" | "$[0-9]+" | "iphone" | "samsung" | "galaxy" | mayusculas...
 mayusculas       → [A-Z]{4,}
 
 resultado_spam         → "SPAM (puntaje ≥ 5)"
@@ -71,9 +80,7 @@ resultado_limpio       → "LIMPIO (puntaje < 3)"
         <ul style="font-size:1rem;">
             <li><strong>S</strong>: Es el símbolo inicial. Representa el proceso completo del sistema: desde la entrada del usuario hasta la clasificación final.</li>
             <li><strong>ENTRADA</strong>: Representa el momento en que el usuario ingresa información (texto, archivo PDF o imagen) para analizar.</li>
-            <li><strong>VALIDACION</strong>: Es el proceso donde el sistema verifica que los datos ingresados no estén vacíos y que no superen el límite de palabras permitido.</li>
-            <li><strong>valida_vacio</strong>: Si los campos están vacíos, el sistema lo detecta y vuelve a pedir entrada al usuario (reinicia el proceso).</li>
-            <li><strong>valida_limite</strong>: Si el texto supera el límite de palabras, el sistema lo detecta y vuelve a pedir entrada al usuario. Si los datos son válidos, continúa el análisis.</li>
+            <li><strong>VALIDACION</strong>: Es el proceso donde el sistema verifica que los datos ingresados son o no spam.</li>
             <li><strong>ANALISIS</strong>: El sistema extrae el texto de la entrada (puede ser texto plano, PDF o imagen) y aplica las expresiones regulares para buscar patrones de spam.</li>
             <li><strong>extrae_texto</strong>: Indica el tipo de entrada que se procesa: texto plano, texto extraído de PDF o texto extraído de imagen.</li>
             <li><strong>aplica_regex</strong>: El sistema aplica de manera recursiva los patrones de spam definidos (expresiones regulares) sobre el texto extraído.</li>
@@ -89,7 +96,6 @@ resultado_limpio       → "LIMPIO (puntaje < 3)"
         <h2>Notas técnicas</h2>
         <ul>
             <li>El análisis se realiza completamente en el navegador, sin enviar datos a servidores.</li>
-            <li>La detección de spam es heurística, no usa modelos de IA pesados.</li>
             <li>El sistema es extensible: más adelante se puede agregar más patrones o reglas según sean necesarios.</li>
         </ul>
     </div>

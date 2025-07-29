@@ -31,19 +31,55 @@ async function analyzeSpam() {
     let totalText = textAreaText;
 
     // Patrones frecuentes de spam con pesos heurísticos
-    const spamPatterns = [
-        { pattern: /gratis/, weight: 3 },
-        { pattern: /haz clic/, weight: 3 },
-        { pattern: /dinero/, weight: 2 },
-        { pattern: /urgente/, weight: 2 },
-        { pattern: /oferta/, weight: 2 },
-        { pattern: /exclusiva/, weight: 2 },
-        { pattern: /\$\d+/, weight: 2 },
-        { pattern: /\biphone\b/, weight: 2 },
-        { pattern: /\bsamsung\b/, weight: 2 },
-        { pattern: /\bgalaxy\b/, weight: 2 },
-        { pattern: /\b[A-Z]{4,}\b/, weight: 1 }, // Mayúsculas como grito publicitario
-    ];
+const spamPatterns = [
+    // Palabras clave comunes en spam
+    { pattern: /gratis/, weight: 3 },
+    { pattern: /haz clic/, weight: 3 },
+    { pattern: /dinero/, weight: 2 },
+    { pattern: /urgente/, weight: 2 },
+    { pattern: /oferta/, weight: 2 },
+    { pattern: /exclusiva/, weight: 2 },
+    { pattern: /\$\d+/, weight: 2 },
+    { pattern: /\biphone\b/, weight: 2 },
+    { pattern: /\bsamsung\b/, weight: 2 },
+    { pattern: /\bgalaxy\b/, weight: 2 },
+    { pattern: /\b[A-Z]{4,}\b/, weight: 1 }, // Palabras en mayúsculas como grito publicitario
+    { pattern: /\b(\w+)\b(?:.*\b\1\b){3,}/i, weight: 3 }, // Repite una palabra al menos 4 veces
+    { pattern: /\b(\w+)\b(?:.*\b\1\b){5,}/i, weight: 5 }, // Repite una palabra al menos 6 veces
+
+
+    // Más palabras sospechosas
+    { pattern: /promoción/, weight: 2 },
+    { pattern: /100% gratis/, weight: 3 },
+    { pattern: /compra ahora/, weight: 3 },
+    { pattern: /haz dinero/, weight: 3 },
+    { pattern: /trabaja desde casa/, weight: 3 },
+    { pattern: /sin costo/, weight: 2 },
+    { pattern: /ganador/, weight: 2 },
+    { pattern: /felicidades/, weight: 1 },
+    { pattern: /sorteo/, weight: 2 },
+    { pattern: /crédito inmediato/, weight: 2 },
+    { pattern: /multiplica tus ingresos/, weight: 3 },
+    { pattern: /oferta limitada/, weight: 2 },
+    { pattern: /exclusivo/, weight: 2 },
+    { pattern: /¡actúa ahora!/, weight: 3 },
+    { pattern: /bonificación/, weight: 2 },
+    { pattern: /enhorabuena/, weight: 2 },
+
+    // Patrones técnicos y engañosos
+    { pattern: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/, weight: 1 }, // Correos electrónicos
+    { pattern: /https?:\/\/[^\s]+/, weight: 2 }, // URLs
+    { pattern: /\b\d{10,16}\b/, weight: 2 }, // Teléfonos o tarjetas largas
+    { pattern: /[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}/, weight: 3 }, // Tarjeta de crédito
+    { pattern: /(?=.*\bganar\b)(?=.*\bdinero\b)/, weight: 3 }, // Combinación de "ganar" y "dinero"
+    { pattern: /\b(bitcoin|crypto|criptomoneda)\b/, weight: 2 },
+
+    // Estilo llamativo de spam
+    { pattern: /!!!+/, weight: 1 }, // Muchas exclamaciones
+    { pattern: /\*\*\*+/, weight: 1 }, // Muchos asteriscos
+    { pattern: /💰|🎁|🔥|📢/, weight: 1 }, // Emojis llamativos
+    { pattern: /(\b[A-Z]{4,}\b.*){2,}/, weight: 2 }, // Varias palabras en mayúsculas
+];
 
     /**
      * Extrae texto desde un archivo PDF usando PDF.js
